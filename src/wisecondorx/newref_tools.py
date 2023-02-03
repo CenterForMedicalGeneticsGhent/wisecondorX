@@ -18,7 +18,7 @@ serve as the cut-off point.
 """
 
 
-def train_gender_model(args, samples):
+def train_gender_model(yfrac, plotyfrac, samples):
     genders = np.empty(len(samples), dtype="object")
     y_fractions = []
     for sample in samples:
@@ -39,7 +39,7 @@ def train_gender_model(args, samples):
     gmm_x = np.linspace(0, 0.02, 5000)
     gmm_y = np.exp(gmm.score_samples(gmm_x.reshape(-1, 1)))
 
-    if args.plotyfrac is not None:
+    if plotyfrac is not None:
         import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots(figsize=(16, 6))
@@ -47,14 +47,12 @@ def train_gender_model(args, samples):
         ax.plot(gmm_x, gmm_y, "r-", label="Gaussian mixture fit")
         ax.set_xlim([0, 0.02])
         ax.legend(loc="best")
-        plt.savefig(args.plotyfrac)
-        logging.info(
-            "Image written to {}, now quitting ...".format(args.plotyfrac)
-        )
+        plt.savefig(plotyfrac)
+        logging.info("Image written to {}, now quitting ...".format(plotyfrac))
         exit()
 
-    if args.yfrac is not None:
-        cut_off = args.yfrac
+    if yfrac is not None:
+        cut_off = yfrac
     else:
         sort_idd = np.argsort(gmm_x)
         sorted_gmm_y = gmm_y[sort_idd]

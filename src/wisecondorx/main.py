@@ -69,7 +69,9 @@ def tool_newref(args):
         samples.append(scale_sample(sample, binsize, args.binsize))
 
     samples = np.array(samples)
-    genders, trained_cutoff = train_gender_model(args, samples)
+    genders, trained_cutoff = train_gender_model(
+        args.yfrac, args.plotyfrac, samples
+    )
 
     if genders.count("F") < 5 and args.nipt:
         logging.warning(
