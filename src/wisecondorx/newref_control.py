@@ -25,7 +25,7 @@ for XY gonosomes (if enough males are included).
 """
 
 
-def tool_newref_prep(args, samples, gender, mask, bins_per_chr):
+def tool_newref_prep(prepfile, binsize, samples, gender, mask, bins_per_chr):
     if gender == "A":
         last_chr = 22
     elif gender == "F":
@@ -49,8 +49,8 @@ def tool_newref_prep(args, samples, gender, mask, bins_per_chr):
     ]
 
     np.savez_compressed(
-        args.prepfile,
-        binsize=args.binsize,
+        prepfile,
+        binsize=binsize,
         gender=gender,
         mask=mask,
         masked_data=masked_data,
@@ -72,7 +72,7 @@ is processed by a separate thread.
 
 def tool_newref_main(args, cpus):
     if cpus != 1:
-        with futures.ThreadPoolExecutor(max_workers=args.cpus) as executor:
+        with futures.ThreadPoolExecutor(max_workers=cpus) as executor:
             for part in range(1, cpus + 1):
                 this_args = copy.copy(args)
                 this_args.part = [part, cpus]

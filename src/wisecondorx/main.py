@@ -93,7 +93,9 @@ def tool_newref(args):
         logging.info("Starting autosomal reference creation ...")
         args.tmpoutfile = "{}.tmp.A.npz".format(args.basepath)
         outfiles.append(args.tmpoutfile)
-        tool_newref_prep(args, samples, "A", total_mask, bins_per_chr)
+        tool_newref_prep(
+            args.prepfile, args.binsize, samples, "A", total_mask, bins_per_chr
+        )
         logging.info("This might take a while ...")
         tool_newref_main(args, args.cpus)
     else:
@@ -107,7 +109,8 @@ def tool_newref(args):
         args.tmpoutfile = "{}.tmp.F.npz".format(args.basepath)
         outfiles.append(args.tmpoutfile)
         tool_newref_prep(
-            args,
+            args.prepfile,
+            args.binsize,
             samples[np.array(genders) == "F"],
             "F",
             total_mask,
@@ -126,7 +129,8 @@ def tool_newref(args):
             args.tmpoutfile = "{}.tmp.M.npz".format(args.basepath)
             outfiles.append(args.tmpoutfile)
             tool_newref_prep(
-                args,
+                args.prepfile,
+                args.binsize,
                 samples[np.array(genders) == "M"],
                 "M",
                 total_mask,
