@@ -48,7 +48,9 @@ def train_gender_model(args, samples):
         ax.set_xlim([0, 0.02])
         ax.legend(loc="best")
         plt.savefig(args.plotyfrac)
-        logging.info("Image written to {}, now quitting ...".format(args.plotyfrac))
+        logging.info(
+            "Image written to {}, now quitting ...".format(args.plotyfrac)
+        )
         exit()
 
     if args.yfrac is not None:
@@ -60,7 +62,9 @@ def train_gender_model(args, samples):
         local_min_i = argrelextrema(sorted_gmm_y, np.less)
 
         cut_off = gmm_x[local_min_i][0]
-        logging.info("Determined --yfrac cutoff: {}".format(str(round(cut_off, 4))))
+        logging.info(
+            "Determined --yfrac cutoff: {}".format(str(round(cut_off, 4)))
+        )
 
     genders[y_fractions > cut_off] = "M"
     genders[y_fractions < cut_off] = "F"
@@ -189,7 +193,8 @@ def get_reference(
         chr_data = np.concatenate(
             (
                 pca_corrected_data[
-                    : masked_bins_per_chr_cum[chr] - masked_bins_per_chr[chr], :
+                    : masked_bins_per_chr_cum[chr] - masked_bins_per_chr[chr],
+                    :,
                 ],
                 pca_corrected_data[masked_bins_per_chr_cum[chr] :, :],
             )
@@ -210,7 +215,8 @@ def get_reference(
     samples = np.transpose(pca_corrected_data)
     for null_i, case_i in enumerate(
         random.sample(
-            range(len(pca_corrected_data[0])), min(len(pca_corrected_data[0]), 100)
+            range(len(pca_corrected_data[0])),
+            min(len(pca_corrected_data[0]), 100),
         )
     ):
         sample = samples[case_i]
@@ -254,7 +260,9 @@ def get_ref_for_bins(ref_size, start, end, pca_corrected_data, chr_data):
     ref_indexes = np.zeros((end - start, ref_size), dtype=np.int32)
     ref_distances = np.ones((end - start, ref_size))
     for this_bin in range(start, end):
-        this_mask = np.sum(np.power(chr_data - pca_corrected_data[this_bin, :], 2), 1)
+        this_mask = np.sum(
+            np.power(chr_data - pca_corrected_data[this_bin, :], 2), 1
+        )
         this_indexes = [-1 for i in range(ref_size)]
         this_distances = [1e10 for i in range(ref_size)]
         remove_index = this_indexes.pop

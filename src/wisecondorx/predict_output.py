@@ -36,7 +36,9 @@ def exec_write_plots(rem_input, results):
 
     if rem_input["args"].add_plot_title:
         # Strip away paths from the outid if need be
-        json_dict["plot_title"] = str(os.path.basename(rem_input["args"].outid))
+        json_dict["plot_title"] = str(
+            os.path.basename(rem_input["args"].outid)
+        )
 
     exec_R(json_dict)
 
@@ -74,7 +76,9 @@ def _generate_bins_bed(rem_input, results):
                 r = "nan"
             if z == 0:
                 z = "nan"
-            feat_str = "{}:{}-{}".format(chr_name, str(feat), str(feat + binsize - 1))
+            feat_str = "{}:{}-{}".format(
+                chr_name, str(feat), str(feat + binsize - 1)
+            )
             row = [chr_name, feat, feat + binsize - 1, feat_str, r, z]
             bins_file.write("{}\n".format("\t".join([str(x) for x in row])))
             feat += binsize
@@ -82,8 +86,12 @@ def _generate_bins_bed(rem_input, results):
 
 
 def _generate_segments_and_aberrations_bed(rem_input, results):
-    segments_file = open("{}_segments.bed".format(rem_input["args"].outid), "w")
-    abberations_file = open("{}_aberrations.bed".format(rem_input["args"].outid), "w")
+    segments_file = open(
+        "{}_segments.bed".format(rem_input["args"].outid), "w"
+    )
+    abberations_file = open(
+        "{}_aberrations.bed".format(rem_input["args"].outid), "w"
+    )
     segments_file.write("chr\tstart\tend\tratio\tzscore\n")
     abberations_file.write("chr\tstart\tend\tratio\tzscore\ttype\n")
 
@@ -103,7 +111,9 @@ def _generate_segments_and_aberrations_bed(rem_input, results):
         segments_file.write("{}\n".format("\t".join([str(x) for x in row])))
 
         ploidy = 2
-        if (chr_name == "X" or chr_name == "Y") and rem_input["ref_gender"] == "M":
+        if (chr_name == "X" or chr_name == "Y") and rem_input[
+            "ref_gender"
+        ] == "M":
             ploidy = 1
         if rem_input["args"].beta is not None:
             if (
@@ -146,7 +156,9 @@ def _generate_chr_statistics_file(rem_input, results):
     stats_file = open("{}_statistics.txt".format(rem_input["args"].outid), "w")
     stats_file.write("chr\tratio.mean\tratio.median\tzscore\n")
     chr_ratio_means = [
-        np.ma.average(results["results_r"][chr], weights=results["results_w"][chr])
+        np.ma.average(
+            results["results_r"][chr], weights=results["results_w"][chr]
+        )
         for chr in range(len(results["results_r"]))
     ]
     chr_ratio_medians = [
@@ -160,13 +172,15 @@ def _generate_chr_statistics_file(rem_input, results):
     ]
 
     msv = round(
-        get_median_segment_variance(results["results_c"], results["results_r"]), 5
+        get_median_segment_variance(
+            results["results_c"], results["results_r"]
+        ),
+        5,
     )
     cpa = round(get_cpa(results["results_c"], rem_input["binsize"]), 5)
     chr_z_scores = get_z_score(results_c_chr, results)
 
     for chr in range(len(results["results_r"])):
-
         chr_name = str(chr + 1)
         if chr_name == "23":
             chr_name = "X"
