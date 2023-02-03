@@ -12,19 +12,19 @@ individual reads to counts per bin.
 """
 
 
-def convert_reads(args):
+def convert_reads(infile, binsize, reference, normdup):
     bins_per_chr = dict()
     for chr in range(1, 25):
         bins_per_chr[str(chr)] = None
 
     logging.info("Importing data ...")
 
-    if args.infile.endswith(".bam"):
-        reads_file = pysam.AlignmentFile(args.infile, "rb")
-    elif args.infile.endswith(".cram"):
-        if args.reference is not None:
+    if infile.endswith(".bam"):
+        reads_file = pysam.AlignmentFile(infile, "rb")
+    elif infile.endswith(".cram"):
+        if reference is not None:
             reads_file = pysam.AlignmentFile(
-                args.infile, "rc", reference_filename=args.reference
+                infile, "rc", reference_filename=reference
             )
         else:
             logging.error(
@@ -48,20 +48,23 @@ def convert_reads(args):
     logging.info("Converting aligned reads ... This might take a while ...")
 
     for index, chr in enumerate(reads_file.references):
-
         chr_name = chr
         if chr_name[:3].lower() == "chr":
             chr_name = chr_name[3:]
-        if chr_name not in bins_per_chr and chr_name != "X" and chr_name != "Y":
+        if (
+            chr_name not in bins_per_chr
+            and chr_name != "X"
+            and chr_name != "Y"
+        ):
             continue
 
         logging.info(
             "Working at {}; processing {} bins".format(
-                chr, int(reads_file.lengths[index] / float(args.binsize) + 1)
+                chr, int(reads_file.lengths[index] / float(binsize) + 1)
             )
         )
         counts = np.zeros(
-            int(reads_file.lengths[index] / float(args.binsize) + 1), dtype=np.int32
+            int(reads_file.lengths[index] / float(binsize) + 1), dtype=np.int32
         )
         bam_chr = reads_file.fetch(chr)
 
@@ -76,14 +79,14 @@ def convert_reads(args):
                     reads_pairf += 1
                     continue
                 if (
-                    not args.normdup
+                    not normdup
                     and larp == read.pos
                     and larp2 == read.next_reference_start
                 ):
                     reads_rmdup += 1
                 else:
                     if read.mapping_quality >= 1:
-                        location = read.pos / args.binsize
+                        location = read.pos / binsize
                         counts[int(location)] += 1
                     else:
                         reads_mapq += 1
@@ -92,11 +95,11 @@ def convert_reads(args):
                 reads_seen += 1
                 larp = read.pos
             else:
-                if not args.normdup and larp == read.pos:
+                if not normdup and larp == read.pos:
                     reads_rmdup += 1
                 else:
                     if read.mapping_quality >= 1:
-                        location = read.pos / args.binsize
+                        location = read.pos / binsize
                         counts[int(location)] += 1
                     else:
                         reads_mapq += 1
